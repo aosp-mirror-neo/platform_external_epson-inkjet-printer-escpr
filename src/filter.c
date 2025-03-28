@@ -32,6 +32,7 @@
 
 #include "epson-protocol.h"
 #include "epson-escpr-api.h"
+#include "epson-escpr-services.h"
 #include "epson-escpr-mem.h"
 
 #include "err.h"
@@ -42,6 +43,7 @@
 #include "optBase.h"
 #include "linux_cmn.h"
 #include "custompage.h"
+#include "xfifo.h"
 
 #define WIDTH_BYTES(bits) (((bits) + 31) / 32 * 4)
 
@@ -66,7 +68,7 @@ extern EPS_UINT32   tmpLineBufSize;
 extern EPS_UINT8*   tmpLineBuf;
 
 extern EPS_CMN_FUNC epsCmnFnc;
-EPS_JOB_FUNCS		jobFnc;
+extern EPS_JOB_FUNCS		jobFnc;
 
 extern EPS_INT32 tonerSave;
 extern EPS_INT32 back_type;
@@ -275,8 +277,8 @@ main (int argc, char *argv[])
 	memset (&printOpt, 0, sizeof (EPS_OPT));
 	memset (&bandBmp, 0, sizeof(EPS_BANDBMP));
 
-	strncpy (fopt.model, argv[1], NAME_MAX);
-	for (i = 0; i < NAME_MAX - 1 && fopt.model[i] != '\0' ; i ++)
+	strncpy (fopt.model, argv[1], EPSON_NAME_MAX);
+	for (i = 0; i < EPSON_NAME_MAX - 1 && fopt.model[i] != '\0' ; i ++)
 		fopt.model_low[i] = tolower (fopt.model[i]);
 	fopt.model_low[i] = '\0';
 
@@ -284,15 +286,15 @@ main (int argc, char *argv[])
 	height_pixel = atol (argv[3]);
 	HWResolution = atol (argv[4]);
 
-	strncpy (fopt.ink, argv[5], NAME_MAX);
-	strncpy (fopt.media, argv[6], NAME_MAX);
-	strncpy (fopt.quality, argv[7], NAME_MAX);
-	strncpy (fopt.duplex, argv[8], NAME_MAX);
-	strncpy (fopt.inputslot, argv[9], NAME_MAX);
-	strncpy (fopt.brightness, argv[10], NAME_MAX);
-	strncpy (fopt.contrast, argv[11], NAME_MAX);
-	strncpy (fopt.saturation, argv[12], NAME_MAX);
-	strncpy (fopt.quietmode, argv[13], NAME_MAX);
+	strncpy (fopt.ink, argv[5], EPSON_NAME_MAX);
+	strncpy (fopt.media, argv[6], EPSON_NAME_MAX);
+	strncpy (fopt.quality, argv[7], EPSON_NAME_MAX);
+	strncpy (fopt.duplex, argv[8], EPSON_NAME_MAX);
+	strncpy (fopt.inputslot, argv[9], EPSON_NAME_MAX);
+	strncpy (fopt.brightness, argv[10], EPSON_NAME_MAX);
+	strncpy (fopt.contrast, argv[11], EPSON_NAME_MAX);
+	strncpy (fopt.saturation, argv[12], EPSON_NAME_MAX);
+	strncpy (fopt.quietmode, argv[13], EPSON_NAME_MAX);
 	
 	debug_msg("all para\n");
 	for(i = 0; i< argc; i++){
@@ -357,9 +359,18 @@ main (int argc, char *argv[])
 	band_line = 1;
 
 	if (strcmp (fopt.ink, "COLOR") == 0)
+	{
 		byte_par_pixel = 3;
-	else
+	}
+	else if (strcmp (fopt.ink, "MONO") == 0)
+	{
 		byte_par_pixel = 1;
+	}
+	else
+	{
+		fprintf(stderr, "ERROR: [escpr] raster data is handled as 8bpp, unknown option\n");
+		byte_par_pixel = 1;
+	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	epsInitLib();

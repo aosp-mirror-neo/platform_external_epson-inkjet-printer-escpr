@@ -35,6 +35,7 @@
 #include <signal.h>
 
 #include "libprtX.h"
+#include "custompage.h"
 
 #define WIDTH_BYTES(bits) (((bits) + 31) / 32 * 4)
 
@@ -204,6 +205,19 @@ main (int argc, char *argv[])
 	{
 		int ret;
 		ret = cupsRasterReadHeader (ras, &header);
+
+		if (header.cupsBitsPerPixel == 24 && header.cupsColorSpace == 1)
+		{
+			strcpy (fopt.ink, "COLOR");
+		}
+		else if (header.cupsBitsPerPixel == 8 && header.cupsColorSpace == 0)
+		{
+			strcpy (fopt.ink, "MONO");
+		}
+		else
+		{
+			strcpy (fopt.ink, "NOT_SUPPORTED");
+		}
 
 		if (ret == 0 && customsize_flag) break;  //カスタムサイズのときはキャッシュしない
 		
@@ -424,7 +438,7 @@ get_option_for_ppd (const char *printer, filter_option_t *filter_opt_p)
 	char *tok;
 
 	/* Get option from PPD. */
-	ppd_path = (char *) cupsGetPPD (printer);
+	ppd_path = getenv("PPD");
 	ppd_p = ppdOpenFile (ppd_path);
 	if(NULL == ppd_p){
 		return 1;
@@ -432,7 +446,7 @@ get_option_for_ppd (const char *printer, filter_option_t *filter_opt_p)
 
 	/* Make library file name */
 	strcpy (filter_opt_p->model, ppd_p->modelname);
-	for (i = 0; i < NAME_MAX && filter_opt_p->model[i] != '\0' ; i ++)
+	for (i = 0; i < EPSON_NAME_MAX && filter_opt_p->model[i] != '\0' ; i ++)
 		filter_opt_p->model_low[i] = tolower (filter_opt_p->model[i]);
 	filter_opt_p->model_low[i] = '\0';
 
@@ -483,14 +497,7 @@ get_option_for_ppd (const char *printer, filter_option_t *filter_opt_p)
 	}
 
 	/* ink */
-	if (filter_opt_p->ink[0] == '\0')
-	{
-		opt = get_default_choice (ppd_p, "Ink");
-		if (!opt)
-			return 1;
-
-		strcpy (filter_opt_p->ink, opt);
-	}
+	// Don't touch Ink key.
 
 	/* MediaType */
 	if (filter_opt_p->quality[0] == '\0')

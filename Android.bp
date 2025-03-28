@@ -12,6 +12,86 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+cc_defaults {
+    name: "libescpr-defaults",
+    cflags: [
+        "-DHAVE_CONFIG_H",
+        "-Wno-pointer-sign",
+        "-Wno-unused-parameter",
+        "-Wno-deprecated-declarations",
+    ],
+    visibility: [
+        "//visibility:private",
+    ],
+}
+
+cc_library_static {
+    name: "libescpr",
+    defaults: [
+        "libescpr-defaults",
+    ],
+    cflags: [
+        "-DGCOMSW_PRT_USE_USB",
+        "-DGCOMSW_PRT_USE_LPR",
+        "-DGCOMSW_PRT_USE_RAW",
+        "-DGCOMSW_EL_CDLABEL",
+        "-DGCOMSW_EF_MAINTE",
+        "-DEPS_FILTER",
+        "-DGCOMSW_ASYNCJOB_SUPPORT",
+        "-DGCOMSW_RAWFILE_SUPPORT",
+    ],
+    local_include_dirs: [
+        "lib",
+    ],
+    srcs: [
+        "lib/*.c",
+    ],
+    sdk_version: "current",
+    export_include_dirs: [
+        "lib",
+    ],
+}
+
+cc_binary {
+    name: "epson-escpr",
+    defaults: [
+        "libescpr-defaults",
+    ],
+    srcs: [
+        "src/*.c",
+    ],
+    exclude_srcs: [
+        "src/wrapper.c",
+    ],
+    sdk_version: "current",
+    static_libs: [
+        "libescpr",
+    ],
+}
+
+cc_binary {
+    name: "epson-escpr-wrapper",
+    defaults: [
+        "libescpr-defaults",
+    ],
+    cflags: [
+        "-DCUPS_FILTER_NAME=\"epson-escpr\"",
+        "-DCUPS_FILTER_PATH=\"/system/bin/cups/filter\"",
+    ],
+    srcs: [
+        "src/wrapper.c",
+        "src/custompage.c",
+    ],
+    sdk_version: "current",
+    shared_libs: [
+        "libcups",
+        "libppd",
+    ],
+    required: [
+        "epson-escpr",
+    ],
+}
+
 // Following defines unused files that are under licenses that are different
 // from default licenses.
 

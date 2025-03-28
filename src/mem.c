@@ -22,6 +22,7 @@
 #endif
 
 #include <stdlib.h>
+#include "err.h"
 #include "mem.h"
 
 void *

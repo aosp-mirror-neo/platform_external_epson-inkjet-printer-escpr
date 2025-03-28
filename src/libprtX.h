@@ -24,7 +24,7 @@
 #  include <config.h>
 #endif
 
-#define NAME_MAX 41
+#define EPSON_NAME_MAX 41
 
 #include "pipsDef.h"
 #include "../lib/epson-escpr-pvt.h"
@@ -43,17 +43,17 @@ typedef struct tagEPS_OPT{
 }EPS_OPT;
 
 typedef struct rtp_filter_option {
-	char model[NAME_MAX + 1];
-	char model_low[NAME_MAX + 1];
-	char ink[NAME_MAX + 1];
-	char media[NAME_MAX + 1];
-	char quality[NAME_MAX + 1];
-	char duplex[NAME_MAX + 1];
-	char inputslot[NAME_MAX + 1];
-	char brightness[NAME_MAX + 1];
-	char contrast[NAME_MAX + 1];
-	char saturation[NAME_MAX + 1];
-	char quietmode[NAME_MAX + 1];
+	char model[EPSON_NAME_MAX + 1];
+	char model_low[EPSON_NAME_MAX + 1];
+	char ink[EPSON_NAME_MAX + 1];
+	char media[EPSON_NAME_MAX + 1];
+	char quality[EPSON_NAME_MAX + 1];
+	char duplex[EPSON_NAME_MAX + 1];
+	char inputslot[EPSON_NAME_MAX + 1];
+	char brightness[EPSON_NAME_MAX + 1];
+	char contrast[EPSON_NAME_MAX + 1];
+	char saturation[EPSON_NAME_MAX + 1];
+	char quietmode[EPSON_NAME_MAX + 1];
 	double custom_width_min;
 	double custom_width_max;
 	double custom_height_min;
