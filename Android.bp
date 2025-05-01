@@ -46,7 +46,6 @@ cc_library_static {
     srcs: [
         "lib/*.c",
     ],
-    sdk_version: "current",
     export_include_dirs: [
         "lib",
     ],
@@ -63,7 +62,6 @@ cc_binary {
     exclude_srcs: [
         "src/wrapper.c",
     ],
-    sdk_version: "current",
     static_libs: [
         "libescpr",
     ],
@@ -82,7 +80,6 @@ cc_binary {
         "src/wrapper.c",
         "src/custompage.c",
     ],
-    sdk_version: "current",
     shared_libs: [
         "libcups",
         "libppd",
