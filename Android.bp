@@ -53,6 +53,7 @@ cc_library_static {
 
 cc_binary {
     name: "epson-escpr",
+    relative_install_path: "cups/filter",
     defaults: [
         "libescpr-defaults",
     ],
@@ -69,6 +70,7 @@ cc_binary {
 
 cc_binary {
     name: "epson-escpr-wrapper",
+    relative_install_path: "cups/filter",
     defaults: [
         "libescpr-defaults",
     ],
