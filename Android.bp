@@ -259,14 +259,6 @@ filegroup {
     ],
 }
 
-license_kind {
-    name: "SPDX-license-identifier-X11",
-    visibility: [
-        "//visibility:private",
-    ],
-    conditions: ["notice"],
-}
-
 license {
     name: "external_epson-escpr_license.unused.x11",
     visibility: [
